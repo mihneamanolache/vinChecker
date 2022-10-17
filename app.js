@@ -83,12 +83,37 @@ const getStolen = async (vin) => {
     }
 }
 
+const getEuroins = async (vinOrPlate) => {
+    console.log(COLORS.yellow ,`\n[i] Attenpting to identify data in Euroins DB`)
+    try {
+        let response = await axios.post(`https://www.euroins.ro/calculator-rca/main.php?ops=getAutoData&vinOrPlate=${vinOrPlate}`)
+        console.log(COLORS.cyan, `[+] Vehicle identified!`)
+        console.log(COLORS.magenta, `   [+] VIN: ${response.data[0].vin}`)
+        console.log(COLORS.magenta, `   [+] Registration number: ${response.data[0].plate}`)
+        console.log(COLORS.magenta, `   [+] Brand: ${response.data[0].make}`)
+        console.log(COLORS.magenta, `   [+] Variant: ${response.data[0].variant}`)
+        console.log(COLORS.magenta, `   [+] Model: ${response.data[0].model}`)
+        console.log(COLORS.magenta, `   [+] Year: ${response.data[0].year}`)
+        console.log(COLORS.magenta, `   [+] Energy Source: ${response.data[0].fuel}`)
+        console.log(COLORS.magenta, `   [+] CC: ${response.data[0].cc}`)
+        console.log(COLORS.magenta, `   [+] kW: ${response.data[0].kw}`)
+        console.log(COLORS.magenta, `   [+] Weight: ${response.data[0].weight}`)
+        console.log(COLORS.magenta, `   [+] CIV ID: ${response.data[0].civ}`)
+        VIN_NO = response.data[0].vin
+    } catch (e) {
+        console.log(e)
+        console.log(COLORS.red, '[-] Unable to retrieve data from Euroins!')
+    }
+}
+
 
 const run = async () => {
     if ( args['vin'] ) {
-        await getAllianz( plate=null, vin=args['vin' ])
+        await getEuroins(args['vin' ])
+        await getAllianz( plate=null, vin=args['vin'])
         await getStolen( args['vin'] )
     } else if ( args['plate'] ) {
+        await getEuroins(args['plate' ])
         await getAllianz(plate=args.plate, vin=null)
         if ( VIN_NO != null ) {
             await getStolen( VIN_NO )
@@ -100,7 +125,7 @@ const run = async () => {
     if ( args['vignette'] ) {
         if ( args['vin'] ) {
             await getVignette(args['vin'])
-        } else if ( VIN_NO != null ) {
+        } else if ( VIN_NO ) {
             await getVignette(VIN_NO)
         } else {
             console.log(COLORS.red, '[!] ERROR! Please provide VIN number!')
