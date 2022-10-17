@@ -33,7 +33,7 @@ const getAllianz = async (plate=null, vin=null) => {
     if ( plate != null ) {
         console.log(COLORS.yellow ,`\n[i] Attenpting to identify data based on plante no.: ${plate.toUpperCase()}`)
         try {
-            let response = await axios.get(`https://mobil.allianztiriac.ro/api/myCar/vin\?licensePlateNumber\=${plate.toUpperCase()}\&requestId\=62cfc78c2d4368230086028e`)
+            let response = await axios.get(`https://mobil.allianztiriac.ro/api/myCar/vin\?licensePlateNumber\=${plate.toUpperCase()}\&requestId\=${process.env.ALLIANZ_REQUEST_ID}`)
             console.log(COLORS.cyan, `[+] Vehicle identified!`)
             console.log(COLORS.magenta, `   [+] VIN: ${response.data.vehicleIdentificationNumber}`)
             console.log(COLORS.magenta, `   [+] Registration number: ${response.data.vehiclePlateNo}`)
@@ -46,6 +46,7 @@ const getAllianz = async (plate=null, vin=null) => {
             console.log(COLORS.magenta, `   [+] kW: ${response.data.vehicleEnginePower}`)
             VIN_NO = response.data.vehicleIdentificationNumber
         } catch (e) {
+            console.log(e)
             console.log(COLORS.red, '[-] Unable to retrieve data from Allianz!')
         }
     }
@@ -118,7 +119,7 @@ const run = async () => {
         await getStolen( args['vin'] )
     } else if ( args['plate'] ) {
         await getEuroins(args['plate' ])
-        await getAllianz(plate=args.plate, vin=null)
+        await getAllianz(plate=args['plate'], vin=null)
         if ( VIN_NO != null ) {
             await getStolen( VIN_NO )
         }
