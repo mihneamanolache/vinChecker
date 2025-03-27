@@ -1,4 +1,4 @@
-# vinChecker
+# vinChecker - grandfather of [vinCheck.ro](https://www.vincheck.ro)
 
 **vinChecker** is a command line tool built with node, designed to gather infomation on a Romanian registered cars, based on their registration number or the VIN. This is the beta version and you are welcome to fork the repo and improve or add new features.
 
